@@ -15,10 +15,10 @@ const char map[] =
   "####     #"
   "#  #     #"
   "#  # #####"
-  "#  #     #"
-  "#  #     #"
-  "#        #"
-  "#    #####"
+  "#  # #   #"
+  "#  # #   #"
+  "#  # #   #"
+  "#      ###"
   "##########";
 
 //constexpr int MAP_W = 5, MAP_H = 5;
@@ -29,8 +29,8 @@ const char map[] =
 //  "#   #"
 //  "#####";
 
-float rx, ry, dx, dy, Dh, Dv, D, cosB, sinB, alfa = 45, alfaRad, gammaRad, betaRad, d, x = 1, y = 1, stepX, stepY, step = 0.1;
-int h, stolb, stolbTexture, wTexture, hTexture;
+float rx, ry, dx, dy, Dh, Dv, D, cosB, sinB, alfa = 45, alfaRad, gammaRad, betaRad, d, x = 2, y = 1.5, stepX, stepY, step = 0.05, trash, stolbTexture;
+int h, stolb, wTexture, hTexture;
 
 void get_wall(float &rx, float &ry, float dx, float dy){
 	do {
@@ -46,10 +46,10 @@ MazeWindow::MazeWindow(int width, int height) :
 		map_img(width*height/4), rectangle_map(),
 		w_rectagle_map((width/6)/MAP_W), h_rectagle_map((height/6)/MAP_H), countStolbInRectangle(width / MAP_W){
 	wall = std::shared_ptr<SDL_Texture>(
-		IMG_LoadTexture(_renderer.get(), "wall2.jpg"), SDL_DestroyTexture);
+		IMG_LoadTexture(_renderer.get(), "wall3.jpg"), SDL_DestroyTexture);
 	if (wall == nullptr)
 		throw std::runtime_error(
-			std::string("Не удалось загрузить стены: ")
+			std::string("пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: ")
 					+ std::string(SDL_GetError()));
 	SDL_QueryTexture(wall.get(), nullptr, nullptr, &wTexture, &hTexture);
 }
@@ -81,7 +81,7 @@ void MazeWindow::render() {
 			rx = floor(x) + eps;
 			dx = 1;
 			dy = tan(betaRad);
-			ry = y- (x-rx) * dy;
+			ry = y - (x - rx) * dy;
 		} else if (cosB < -eps){
 			rx = ceil(x) - eps;
 			dx = -1;
@@ -97,6 +97,7 @@ void MazeWindow::render() {
 			Dv = hypot (rx-x, ry-y);
 		}
 
+		stolbTexture = modf(ry, nullptr);
 
 		if (sinB > eps){
 			dy = 1;
@@ -122,11 +123,13 @@ void MazeWindow::render() {
 
 		h = d/D;
 
-	    stolbTexture = stolb % countStolbInRectangle;
+		if (D == Dh){
+			stolbTexture = modf(rx, nullptr);
+		}
 
-		imgPartRect.x = stolbTexture * (wTexture / countStolbInRectangle);
+		imgPartRect.x = stolbTexture * wTexture;
 		imgPartRect.y = 0;
-		imgPartRect.w = 2;
+		imgPartRect.w = 1;
 		imgPartRect.h = hTexture;
 
 		SDL_Rect wall_rect{stolb, height()/2 - h/2, 1, h};
@@ -176,10 +179,10 @@ void MazeWindow::handle_keys(const Uint8 *keys) {
 		}
 	}
 	if (keys[SDL_SCANCODE_LEFT]){
-		alfa -=1;
+		alfa -=2;
 	}
 	if (keys[SDL_SCANCODE_RIGHT]){
-		alfa +=1;
+		alfa +=2;
 	}
 
 }
